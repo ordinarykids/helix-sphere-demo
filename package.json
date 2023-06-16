@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx serve",
-    "build": "npx serve"
+    "build": "servez -p 8080 --ssl"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   "homepage": "https://github.com/ordinarykids/helix-sphere-demo#readme",
   "dependencies": {
     "serve": "^14.2.0",
+    "servez": "^1.14.2",
     "three": "^0.152.2"
   }
 }

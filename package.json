@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/ordinarykids/helix-sphere-demo#readme",
   "dependencies": {
+    "serve": "^14.2.0",
     "three": "^0.152.2"
   }
 }

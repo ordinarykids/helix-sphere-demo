@@ -24,13 +24,13 @@
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
 
     <script type="importmap">
-            {
-                "imports": {
-                    "three": "../build/three.module.js",
-                    "three/addons/": "./jsm/"
-                }
-            }
-        </script>
+                        {
+                                "imports": {
+                                        "three": "../build/three.module.js",
+                                        "three/addons/": "./jsm/"
+                                }
+                        }
+                </script>
 
     <script type="module">
 
@@ -40,7 +40,12 @@
         import { ConvexGeometry } from 'three/addons/geometries/ConvexGeometry.js';
         import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
-        let group, group1, group2, group3, group4, camera, scene, renderer;
+        let group, camera, scene, renderer;
+
+        // Define wiframe colors
+        const wireframeWireColor = '0xD8E1E5';
+
+
 
         init();
         animate();
@@ -64,22 +69,22 @@
             // controls
 
             const controls = new OrbitControls(camera, renderer.domElement);
-            controls.minDistance = 20;
+            controls.minDistance = 10;
             controls.maxDistance = 50;
             controls.maxPolarAngle = Math.PI / 2;
 
             // ambient light
 
-            scene.add(new THREE.AmbientLight(0xCCCCCC));
+            scene.add(new THREE.AmbientLight(0xffffff));
 
             // point light
 
-            const light = new THREE.PointLight(0xF45B83, 1);
-            camera.add(light);
+            //     const light = new THREE.PointLight(0xF45B83, 1);
+            //    // camera.add(light);
 
             // helper
 
-            scene.add(new THREE.AxesHelper(20));
+            //	scene.add(new THREE.AxesHelper(20));
 
             // textures
 
@@ -87,25 +92,16 @@
             const texture = loader.load('assets/triangle.png');
             const texture2 = loader.load('assets/circle.png');
             const texture3 = loader.load('assets/hexagon.png');
-            const texture4 = loader.load('assets/diamond.png');
+            //	texture3.anisotropy = renderer.getMaxAnisotropy();
+            //	const texture4 = loader.load('assets/diamond.png');
+
+            const texture4 = new THREE.TextureLoader().load('assets/diamond.png');
+
             //texture.colorSpace = THREE.SRGBColorSpace;
 
 
             group = new THREE.Group();
             scene.add(group);
-
-            group1 = new THREE.Group();
-            scene.add(group1);
-
-            group2 = new THREE.Group();
-            scene.add(group2);
-
-            group3 = new THREE.Group();
-            scene.add(group3);
-
-            group4 = new THREE.Group();
-            scene.add(group4);
-
 
 
 
@@ -113,6 +109,7 @@
 
             let sphereGeometry = new THREE.SphereGeometry(10, 12, 6);
 
+            console.log(sphereGeometry);
             // if normal and uv attributes are not removed, mergeVertices() can't consolidate indentical vertices with different normal/uv data
 
             sphereGeometry.deleteAttribute('normal');
@@ -156,11 +153,6 @@
                         // do something 4
                         vertices4.push(vertex);
                 }
-
-
-
-
-
             }
 
             const pointsMaterial = new THREE.PointsMaterial({
@@ -169,8 +161,6 @@
                 size: 100,
                 alphaTest: .1
             });
-
-
 
             const pointsMaterial1 = new THREE.PointsMaterial({
                 // color: 0xFF3333,
@@ -200,16 +190,6 @@
                 alphaTest: .1
             });
 
-            const postsMaterialArray = [pointsMaterial1, pointsMaterial2, pointsMaterial3]
-
-            //const pointsGeometry = new THREE.BufferGeometry().setFromPoints(vertices);
-
-
-            // vertices sphere
-            const pointsGeometry = new THREE.BufferGeometry().setFromPoints(vertices1);
-            const points = new THREE.Points(pointsGeometry, pointsMaterial);
-            group.add(points);
-
 
 
             // vertices1
@@ -232,35 +212,29 @@
             const points4 = new THREE.Points(pointsGeometry4, pointsMaterial4);
             group.add(points4);
 
+
+
+
+
             // convex hull
 
             const meshMaterial = new THREE.MeshLambertMaterial({
-                color: 0x333333,
+                //   color: 0x333333,
                 opacity: 0.5,
                 side: THREE.DoubleSide,
                 transparent: false,
                 wireframe: true
             });
 
-            // MAIN WIRE FRAME
-            meshMaterial.color.setHex(0xFFcccc);
+
+
+            // DRAW WIREFRAME FOR EACH VERTEX
+            meshMaterial.color.setHex(wireframeWireColor);
             let meshGeometry = new ConvexGeometry(vertices);
             let mesh = new THREE.Mesh(meshGeometry, meshMaterial);
             group.add(mesh);
 
-            // // triangles
-            // meshMaterial.color.setHex(0xFFcccc);
-            // let meshGeometry1 = new ConvexGeometry(vertices1);
-            // let mesh1 = new THREE.Mesh(meshGeometry1, meshMaterial);
-            // group.add(mesh1);
 
-            // // 
-            // meshMaterial.color.setHex(0xFFcccc);
-            // let meshGeometry2 = new ConvexGeometry(vertices2);
-            // let mesh2 = new THREE.Mesh(meshGeometry2, meshMaterial);
-            // group.add(mesh2);
-
-            //
 
             window.addEventListener('resize', onWindowResize);
 
@@ -279,7 +253,7 @@
 
             requestAnimationFrame(animate);
 
-            group.rotation.y += 0.001;
+            group.rotation.y += 0.0009;
 
             render();
 
@@ -292,51 +266,6 @@
         }
 
 
-        function separateGroups(bufGeom) {
-
-            var outGeometries = [];
-
-            var groups = bufGeom.groups;
-
-            var origVerts = bufGeom.getAttribute('position').array;
-            var origNormals = bufGeom.getAttribute('normal').array;
-            var origNumVerts = Math.floor(origVerts.length / 3);
-
-            for (var ig = 0, ng = groups.length; ig < ng; ig++) {
-
-                var group = groups[ig];
-
-                var destNumVerts = group.count;
-
-                var newBufGeom = new THREE.BufferGeometry();
-                var newPositions = new Float32Array(destNumVerts * 3);
-                var newNormals = new Float32Array(destNumVerts * 3);
-
-                for (var iv = 0; iv < destNumVerts; iv++) {
-
-                    var indexOrig = 3 * (group.start + iv);
-                    var indexDest = 3 * iv;
-
-                    newPosition[indexDest] = origVerts[indexOrig];
-                    newPosition[indexDest + 1] = origVerts[indexOrig + 1];
-                    newPosition[indexDest + 2] = origVerts[indexOrig + 2];
-
-                    newNormals[indexDest] = origNormals[indexOrig];
-                    newNormals[indexDest + 1] = origNormals[indexOrig + 1];
-                    newNormals[indexDest + 2] = origNormals[indexOrig + 2];
-
-                }
-
-                newBufGeom.setAttribute('position', new Float32BufferAttribute(newPositions, 3));
-                newBufGeom.setAttribute('normal', new Float32BufferAttribute(newNormals, 3));
-
-                outGeometries.push(newBufGeom);
-
-            }
-
-            return outGeometries;
-
-        }
 
 
     </script>

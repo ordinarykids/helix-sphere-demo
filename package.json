@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx serve"
+    "dev": "npx serve",
+    "build": "npx serve"
   },
   "repository": {
     "type": "git",

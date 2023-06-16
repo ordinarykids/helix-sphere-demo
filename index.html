@@ -69,8 +69,8 @@
             // controls
 
             const controls = new OrbitControls(camera, renderer.domElement);
-            controls.minDistance = 10;
-            controls.maxDistance = 50;
+            controls.minDistance = 40;
+            controls.maxDistance = 40;
             controls.maxPolarAngle = Math.PI / 2;
 
             // ambient light
@@ -107,7 +107,7 @@
 
             // points
 
-            let sphereGeometry = new THREE.SphereGeometry(10, 12, 6);
+            let sphereGeometry = new THREE.SphereGeometry(10, 9, 7);
 
             console.log(sphereGeometry);
             // if normal and uv attributes are not removed, mergeVertices() can't consolidate indentical vertices with different normal/uv data
@@ -127,14 +127,12 @@
 
             for (let i = 0; i < positionAttribute.count; i++) {
 
-
-
+                // create points for Wireframe
                 const vertex = new THREE.Vector3();
                 vertex.fromBufferAttribute(positionAttribute, i);
                 vertices.push(vertex);
-                /// SPLIT INTO 3 VERtICES
 
-                //Swith statement
+                //Split the pointup in 4 groups
 
                 switch (i % 4) { // values will be in the range 0 to 3 inclusive
                     case 0:
@@ -155,12 +153,6 @@
                 }
             }
 
-            const pointsMaterial = new THREE.PointsMaterial({
-                // color: 0xFF3333,
-                map: texture,
-                size: 100,
-                alphaTest: .1
-            });
 
             const pointsMaterial1 = new THREE.PointsMaterial({
                 // color: 0xFF3333,
